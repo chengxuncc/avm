@@ -62,7 +62,7 @@ func main() {
 				}
 				v += getUint64(world[i:], wordSize)
 				putUint64(world[i:], wordSize, v)
-				i += wordSize
+				i += 2 * wordSize
 			case 4: // sub
 				fmt.Println(i, "sub")
 				var v uint64
@@ -71,7 +71,7 @@ func main() {
 				}
 				v -= getUint64(world[i:], wordSize)
 				putUint64(world[i:], wordSize, v)
-				i += wordSize
+				i += 2 * wordSize
 			case 5: // mul
 				fmt.Println(i, "mul")
 				var v uint64
@@ -80,7 +80,7 @@ func main() {
 				}
 				v *= getUint64(world[i:], wordSize)
 				putUint64(world[i:], wordSize, v)
-				i += wordSize
+				i += 2 * wordSize
 			case 6: // div
 				fmt.Println(i, "div")
 				var v uint64
@@ -94,7 +94,7 @@ func main() {
 					v /= p
 				}
 				putUint64(world[i:], wordSize, v)
-				i += wordSize
+				i += 2 * wordSize
 			default:
 				world[i] = 0
 			}

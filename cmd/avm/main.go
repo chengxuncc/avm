@@ -28,13 +28,13 @@ func randBytes(size int) []byte {
 
 const wordSize = 8
 
+var world = make([]byte, wordSize)
+
 func main() {
-	world := make([]byte, wordSize)
-	for {
-		if len(world) == 0 {
-			world = world[:wordSize]
-		}
-		for i := uint64(0); i < uint64(len(world)); i++ {
+	threadCount := uint64(1)
+	var loop func(uint64, uint64)
+	loop = func(thread, start uint64) {
+		for i := start; i < uint64(len(world)); i++ {
 			switch world[i] {
 			case 0: // random
 				rand8 := randBytes(wordSize)
@@ -45,17 +45,17 @@ func main() {
 				if i > wordSize {
 					dst = getUint64(world[i-wordSize:], wordSize)
 					if dst < uint64(len(world)) && i != dst+1 {
-						fmt.Println(i, "jump", dst)
+						fmt.Println(thread, i, "jump", dst)
 						i = dst
 						break
 					}
 				}
 				world[i] = 0
 			case 2: // word step
-				fmt.Println(i, "data")
+				fmt.Println(thread, i, "data")
 				i += wordSize
 			case 3: // add
-				fmt.Println(i, "add")
+				fmt.Println(thread, i, "add")
 				var v uint64
 				if i > wordSize {
 					v = getUint64(world[i-wordSize:], wordSize)
@@ -64,7 +64,7 @@ func main() {
 				putUint64(world[i:], wordSize, v)
 				i += 2 * wordSize
 			case 4: // sub
-				fmt.Println(i, "sub")
+				fmt.Println(thread, i, "sub")
 				var v uint64
 				if i > wordSize {
 					v = getUint64(world[i-wordSize:], wordSize)
@@ -73,7 +73,7 @@ func main() {
 				putUint64(world[i:], wordSize, v)
 				i += 2 * wordSize
 			case 5: // mul
-				fmt.Println(i, "mul")
+				fmt.Println(thread, i, "mul")
 				var v uint64
 				if i > wordSize {
 					v = getUint64(world[i-wordSize:], wordSize)
@@ -82,7 +82,7 @@ func main() {
 				putUint64(world[i:], wordSize, v)
 				i += 2 * wordSize
 			case 6: // div
-				fmt.Println(i, "div")
+				fmt.Println(thread, i, "div")
 				var v uint64
 				if i > wordSize {
 					v = getUint64(world[i-wordSize:], wordSize)
@@ -95,9 +95,30 @@ func main() {
 				}
 				putUint64(world[i:], wordSize, v)
 				i += 2 * wordSize
+			case 7: // copy
+				fmt.Println(thread, i, "copy")
+				var v uint64
+				if i > wordSize {
+					v = getUint64(world[i-wordSize:], wordSize)
+				}
+				putUint64(world[i:], 0, v)
+				i += wordSize
+			case 8: // go
+				if i > wordSize {
+					dst := getUint64(world[i-wordSize:], wordSize)
+					if dst < uint64(len(world)) && i != dst+1 {
+						fmt.Println(thread, i, "go", dst)
+						subthread := threadCount
+						threadCount++
+						go loop(subthread, dst)
+					}
+				}
 			default:
 				world[i] = 0
 			}
 		}
+	}
+	for {
+		loop(0, 0)
 	}
 }

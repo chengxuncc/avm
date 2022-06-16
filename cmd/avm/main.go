@@ -44,9 +44,9 @@ func main() {
 				var dst uint64
 				if i > wordSize {
 					dst = getUint64(world[i-wordSize:], wordSize)
-					if dst < uint64(len(world)) && i != dst {
-						i = dst
+					if dst < uint64(len(world)) && i != dst+1 {
 						fmt.Println(i, "jump", dst)
+						i = dst
 						break
 					}
 				}
@@ -62,6 +62,7 @@ func main() {
 				}
 				v += getUint64(world[i:], wordSize)
 				putUint64(world[i:], wordSize, v)
+				i += wordSize
 			case 4: // sub
 				fmt.Println(i, "sub")
 				var v uint64
@@ -70,6 +71,7 @@ func main() {
 				}
 				v -= getUint64(world[i:], wordSize)
 				putUint64(world[i:], wordSize, v)
+				i += wordSize
 			case 5: // mul
 				fmt.Println(i, "mul")
 				var v uint64
@@ -78,6 +80,7 @@ func main() {
 				}
 				v *= getUint64(world[i:], wordSize)
 				putUint64(world[i:], wordSize, v)
+				i += wordSize
 			case 6: // div
 				fmt.Println(i, "div")
 				var v uint64
@@ -91,6 +94,7 @@ func main() {
 					v /= p
 				}
 				putUint64(world[i:], wordSize, v)
+				i += wordSize
 			default:
 				world[i] = 0
 			}
